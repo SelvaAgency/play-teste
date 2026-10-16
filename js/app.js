@@ -217,7 +217,7 @@
 
     $(".quiz__count").textContent = `${state.index + 1} de ${QUESTIONS.length}`;
     $(".quiz__comp").textContent = `${moduloNome(q)} · ${q.competencia}`;
-    setAvaliando(q.competencia);
+    setAvaliando(q.avaliando);
     $(".quiz__question").textContent = q.pergunta;
 
     $(".options").innerHTML =

@@ -3,6 +3,7 @@
 // e dá um sinal de base sem pretender diagnosticar nível. O nível
 // (Básico / Intermediário / Avançado) só sai do diagnóstico completo, com 27 questões.
 // Os textos vêm da planilha "Diagnóstico" e da aba "Feedbacks (import)", sem alteração.
+// `avaliando`: rótulo do cabeçalho do radar durante a questão ("Avaliando: ...").
 // `peso` (0 a 1) é quanto cada alternativa avança o eixo da competência no radar:
 // 1 na correta; nas erradas, proposta da SELVA conforme o quanto o raciocínio se
 // aproxima da melhor decisão (base: o próprio feedback). A validar com a Scaffold.
@@ -13,6 +14,7 @@ window.QUESTIONS = [
   {
     n: 2,
     cod: "C1",
+    avaliando: "Domínio dos fundamentos",
     modulo: "M1",
     competencia: "Fundamentos de IA",
     pergunta: "O diretor comercial diz: \"quero usar IA para vender mais\". Qual reformulação transforma isso em algo testável?",
@@ -46,6 +48,7 @@ window.QUESTIONS = [
   {
     n: 5,
     cod: "C2",
+    avaliando: "Capacidade de priorização",
     modulo: "M2",
     competencia: "Priorização de casos de uso",
     pergunta: "Você levantou 6 oportunidades: duas de alto valor e alta complexidade, uma de valor médio e complexidade baixa, três de valor baixo. É o primeiro projeto de IA da empresa. Por onde começar?",
@@ -79,6 +82,7 @@ window.QUESTIONS = [
   {
     n: 8,
     cod: "C3",
+    avaliando: "Definição de métricas de sucesso",
     modulo: "M3",
     competencia: "Definição de valor e KPIs",
     pergunta: "Um sistema vai classificar e-mails de clientes e separar reclamações graves para tratamento prioritário. Deixar passar uma reclamação grave é muito mais custoso que sinalizar uma comum por engano. Qual métrica deve guiar o ajuste?",
@@ -112,6 +116,7 @@ window.QUESTIONS = [
   {
     n: 11,
     cod: "C4",
+    avaliando: "Definição de abordagem tecnológica",
     modulo: "M4",
     competencia: "Escolha de abordagem tecnológica",
     pergunta: "Um processo exige interpretar documentos internos extensos e decidir em várias etapas com base neles. Qual abordagem tende a ser mais adequada?",
@@ -145,6 +150,7 @@ window.QUESTIONS = [
   {
     n: 14,
     cod: "C5",
+    avaliando: "Domínio de prototipagem de agentes",
     modulo: "M5",
     competencia: "Prototipagem de agentes",
     pergunta: "Ao construir o primeiro protótipo de um agente, qual deve ser o foco?",
@@ -178,6 +184,7 @@ window.QUESTIONS = [
   {
     n: 17,
     cod: "C6",
+    avaliando: "Capacidade de validação",
     modulo: "M6",
     competencia: "Validação e guardrails",
     pergunta: "Em que situações um agente deve obrigatoriamente escalar a decisão para um humano?",
@@ -211,6 +218,7 @@ window.QUESTIONS = [
   {
     n: 20,
     cod: "C7",
+    avaliando: "Capacidade de análise de dados",
     modulo: "M7",
     competencia: "Dados e indicadores de operação",
     pergunta: "Você acompanha três indicadores semanais de um agente em operação. Em uma semana, um deles cai abaixo da meta. Qual é a leitura mais adequada?",
@@ -244,6 +252,7 @@ window.QUESTIONS = [
   {
     n: 23,
     cod: "C8",
+    avaliando: "Capacidade de governança",
     modulo: "M8",
     competencia: "Governança e IA responsável",
     pergunta: "Sua empresa vai usar dados históricos de contratação para treinar um modelo de triagem de candidatos. Como reduzir o risco de viés?",
@@ -277,6 +286,7 @@ window.QUESTIONS = [
   {
     n: 26,
     cod: "C9",
+    avaliando: "Capacidade de liderança e adoção",
     modulo: "M9",
     competencia: "Liderança e adoção",
     pergunta: "Uma área resiste a usar um agente já validado, por receio de que ele substitua pessoas. Qual abordagem tem mais chance de destravar a adoção?",

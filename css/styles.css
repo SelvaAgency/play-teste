@@ -8,6 +8,7 @@
   --rosinha: #fe94ba;
   --azulzinho: #0061ff;
   --branco: #ffffff;
+  --laranja-vivo: #ff8a00; /* só no radar, para se diferenciar do laranja da marca */
 
   /* Modo noturno: mesma marca, superfícies escuras */
   --bg: #121212;
@@ -641,9 +642,10 @@ button { font: inherit; }
 .radar .r-grid { fill: none; stroke: #3a3a3a; stroke-width: 1; }
 .radar .r-axis { stroke: #333; stroke-width: 1; }
 .radar .r-axis.is-current { stroke: var(--vermelhinho); stroke-width: 1.5; stroke-dasharray: 3 3; }
-.radar .r-shape { fill: rgba(247, 200, 0, .32); stroke: var(--amarelinho); stroke-width: 2; stroke-linejoin: round; }
-.radar .r-pt { fill: var(--amarelinho); stroke: var(--surface); stroke-width: 1; }
-.radar .r-pt.is-miss { fill: var(--vermelhinho); }
+.radar .r-shape { fill: rgba(255, 138, 0, .3); stroke: var(--laranja-vivo); stroke-width: 2; stroke-linejoin: round; }
+.radar .r-pt { fill: var(--laranja-vivo); stroke: var(--surface); stroke-width: 1; }
+/* Ponto de atenção: vazado (forma, não só cor) */
+.radar .r-pt.is-miss { fill: var(--surface); stroke: var(--laranja-vivo); stroke-width: 1.5; }
 .radar .r-hit { fill: transparent; cursor: default; }
 .radar .r-label { font-family: var(--font-head); font-size: 11px; font-weight: 600; fill: var(--texto-2); }
 .radar .r-label.is-current { fill: var(--vermelhinho); font-weight: 800; }
@@ -695,7 +697,7 @@ button { font: inherit; }
 }
 .radar .r-pump { transform-box: view-box; transform-origin: var(--cx) var(--cy); }
 .radar .r-shape { transition: fill .4s ease; }
-.radar.is-pumping .r-shape { fill: rgba(247, 200, 0, .5); }
+.radar.is-pumping .r-shape { fill: rgba(255, 138, 0, .48); }
 @media (prefers-reduced-motion: reduce) {
   .radar .r-breath { animation: none; }
 }
