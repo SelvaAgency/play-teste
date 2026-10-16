@@ -1,7 +1,8 @@
 (function () {
   "use strict";
 
-  // TODO: apontar para a URL do diagnóstico completo (27 questões) quando estiver no ar.
+  // URL do diagnóstico completo, para links com data-cta="full" (hoje nenhum botão usa;
+  // os CTAs do resultado levam à compra da trilha).
   const FULL_TEST_URL = "https://scaffoldplay.com.br/";
 
   // TODO: endpoint que recebe os leads (CRM / automação). Vazio = não envia nada.
