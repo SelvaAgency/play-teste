@@ -951,5 +951,6 @@ body.theme-light {
 .how__item--play:focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; }
 .how__item--play .how__num { color: var(--pretinho); }
 .how__item--play p { color: rgba(18, 18, 18, .85); }
-.how__link { margin-top: auto; padding-top: 16px; font-family: var(--font-head); font-weight: 800; font-size: 15px; }
+.how__link { margin-top: auto; padding-top: 16px; font-family: var(--font-head); font-weight: 700; font-size: 14px; color: rgba(18, 18, 18, .75); text-decoration: underline; text-underline-offset: 3px; }
+.how__item--play:hover .how__link { color: var(--pretinho); }
 @media (prefers-reduced-motion: reduce) { .how__item--play { transition: none; } }
