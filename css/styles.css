@@ -147,8 +147,9 @@ button { font: inherit; }
 .hero {
   position: relative;
   overflow: hidden;
-  background: var(--vermelhinho);
-  color: var(--branco);
+  background: var(--surface);
+  color: var(--vermelhinho);
+  border-bottom: 1px solid #2a2a2a;
 }
 .hero__inner {
   position: relative;
@@ -165,7 +166,7 @@ button { font: inherit; }
 .hero__lead {
   font-size: clamp(1.05rem, 2vw, 1.25rem);
   max-width: 54ch;
-  color: rgba(255,255,255,.92);
+  color: var(--vermelhinho);
   margin-bottom: 28px;
 }
 .chips {
@@ -182,7 +183,8 @@ button { font: inherit; }
   font-size: 14px;
   padding: 6px 14px;
   border-radius: var(--radius-pill);
-  background: rgba(18,18,18,.18);
+  background: rgba(241, 101, 34, .12);
+  color: var(--vermelhinho);
 }
 
 /* Blocos em pixel, ecoando o símbolo do logo */
@@ -199,7 +201,7 @@ button { font: inherit; }
 }
 .hero__blocks span:nth-child(1) { background: var(--amarelinho); }
 .hero__blocks span:nth-child(2) { background: transparent; }
-.hero__blocks span:nth-child(3) { background: var(--pretinho); }
+.hero__blocks span:nth-child(3) { background: var(--vermelhinho); }
 .hero__blocks span:nth-child(4) { background: var(--verdinho); }
 @media (max-width: 899px) { .hero__blocks { width: 120px; height: 120px; right: -10px; bottom: -10px; opacity: .55; } }
 @media (max-width: 599px) { .hero__blocks { display: none; } .hero .btn--lg { width: 100%; } }
