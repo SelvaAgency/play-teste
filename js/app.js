@@ -34,6 +34,17 @@
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[c]));
 
+  const pad = n => String(n).padStart(2, "0");
+  const slug = s => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z0-9]+/g, "_").replace(/^_|_$/g, "");
+
+  // Painel "console" do hero: lista as 9 competências com entrada escalonada
+  $(".console__list").innerHTML = QUESTIONS.map((q, i) => `
+    <li style="animation-delay:${120 + i * 90}ms">
+      <span class="c-code">${q.cod}</span>
+      <span class="c-name">${slug(q.competencia)}</span>
+      <span class="c-status">[ -- ]</span>
+    </li>`).join("");
+
   const state = { index: 0, answers: new Array(QUESTIONS.length).fill(null) };
 
   // ---------- Telas ----------
@@ -55,7 +66,7 @@
       el.classList.toggle("is-current", i === state.index);
     });
 
-    $(".quiz__count").textContent = `${state.index + 1} de ${QUESTIONS.length}`;
+    $(".quiz__count").textContent = `[ ${pad(state.index + 1)} / ${pad(QUESTIONS.length)} ]`;
     $(".quiz__comp").textContent = `${q.modulo} · ${q.competencia}`;
     $(".quiz__question").textContent = q.pergunta;
 
