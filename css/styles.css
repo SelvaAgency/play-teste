@@ -254,7 +254,7 @@ button { font: inherit; }
   line-height: 1.3;
   padding: 7px 16px;
   border-radius: var(--radius-pill);
-  background: var(--amarelinho);
+  background: var(--verdinho);
   color: var(--pretinho);
 }
 .quiz__question {
@@ -284,7 +284,7 @@ button { font: inherit; }
   cursor: pointer;
   transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
 }
-.option:hover { border-color: var(--amarelinho); }
+.option:hover { border-color: var(--verdinho); }
 .option input { position: absolute; opacity: 0; pointer-events: none; }
 .option__letter {
   flex: 0 0 auto;
@@ -302,12 +302,12 @@ button { font: inherit; }
 }
 .option__text { padding-top: 5px; font-size: 16.5px; }
 .option:has(input:checked) {
-  border-color: var(--amarelinho);
+  border-color: var(--verdinho);
   background: var(--surface-2);
-  box-shadow: 4px 4px 0 var(--amarelinho);
+  box-shadow: 4px 4px 0 var(--verdinho);
 }
-.option:has(input:checked) .option__letter { background: var(--amarelinho); color: var(--pretinho); }
-.option:has(input:focus-visible) { outline: 3px solid var(--amarelinho); outline-offset: 2px; }
+.option:has(input:checked) .option__letter { background: var(--verdinho); color: var(--pretinho); }
+.option:has(input:focus-visible) { outline: 3px solid var(--verdinho); outline-offset: 2px; }
 
 .quiz__nav {
   display: flex;
@@ -623,9 +623,9 @@ button { font: inherit; }
   border-radius: 1.5px;
   animation: 4.8s cubic-bezier(.55,0,.25,1) infinite both;
 }
-.cubes-loader i:nth-child(1) { background: var(--verdinho); animation-name: cube-a; }
-.cubes-loader i:nth-child(2) { background: var(--amarelinho); animation-name: cube-b; }
-.cubes-loader i:nth-child(3) { background: var(--rosinha); animation-name: cube-c; }
+.cubes-loader i:nth-child(1) { background: var(--pretinho); animation-name: cube-a; }
+.cubes-loader i:nth-child(2) { background: var(--pretinho); animation-name: cube-b; }
+.cubes-loader i:nth-child(3) { background: var(--pretinho); animation-name: cube-c; }
 @keyframes cube-a {
   0% { transform: translate(0px, 0px); }
   0.000% { transform: translate(0px, 0px); }
