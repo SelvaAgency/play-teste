@@ -16,18 +16,18 @@
   const TIERS = [
     {
       min: 8,
-      title: "Base sólida para avançar",
-      lead: "Você acertou quase todas as situações de nível intermediário. O diagnóstico completo diz em quais módulos você já está no avançado e pode seguir em ritmo rápido."
+      title: "Você já entende bem de IA aplicada",
+      lead: "Suas decisões mostram domínio em quase todas as habilidades avaliadas. O diagnóstico completo pode te ajudar a entender sua habilidade em mais profundidade, com situações de nível avançado."
     },
     {
       min: 5,
-      title: "Boa base, com lacunas claras",
-      lead: "Em boa parte das competências você já decide bem. As que ficaram em laranja no mapa abaixo são onde a trilha vai render mais para você."
+      title: "Você já entende bem, mas tem espaço para crescer",
+      lead: "Em boa parte das situações você já decide bem. Algumas habilidades ainda pedem desenvolvimento, e o mapa abaixo mostra quais são."
     },
     {
       min: 0,
-      title: "Seu ponto de partida está mapeado",
-      lead: "Várias competências ainda pedem atenção, e é para isso que a trilha existe. O mapa abaixo mostra por onde começar, e a revisão explica cada resposta."
+      title: "Você está construindo sua base em IA",
+      lead: "Várias habilidades ainda estão em desenvolvimento, o que é comum para quem está começando a aplicar IA no trabalho. O mapa abaixo mostra onde está o seu maior potencial de evolução."
     }
   ];
 
@@ -106,9 +106,9 @@
     $$(".r-axis, .r-label", el).forEach(n => n.classList.toggle("is-current", +n.dataset.i === current));
     $$(".r-pt", el).forEach((r, i) => r.classList.toggle("is-miss", status[i] === "miss"));
     $$("title", el).forEach((t, i) => {
-      const st = status[i] === "ok" ? "sinal positivo" : status[i] === "miss" ? "ponto de atenção"
+      const st = status[i] === "ok" ? "ponto forte" : status[i] === "miss" ? "para desenvolver"
         : status[i] === "answered" ? "respondida" : "ainda não respondida";
-      t.textContent = `${QUESTIONS[i].competencia}: ${st}`;
+      t.textContent = `${QUESTIONS[i].avaliando}: ${st}`;
     });
     $("svg", el).setAttribute("aria-label", label);
 
@@ -274,18 +274,20 @@
   }
 
   // ---------- Texto personalizado do mapa ----------
-  // As 9 competências agrupadas nas três fases da trilha.
-  const FASES = [
-    { nome: "estratégia", desc: "decidir onde e por que usar IA", cods: ["C1", "C2", "C3"] },
-    { nome: "construção", desc: "escolher, prototipar e validar a solução", cods: ["C4", "C5", "C6"] },
-    { nome: "operação", desc: "sustentar a IA no dia a dia, com governança e adoção", cods: ["C7", "C8", "C9"] }
+  // O texto fala das habilidades da pessoa (nomes do "Avaliando"), não de módulos ou aulas.
+  // As 9 competências se agrupam em três frentes de habilidade.
+  const FRENTES = [
+    { desc: "decidir onde e por que usar IA", cods: ["C1", "C2", "C3"] },
+    { desc: "construir e validar soluções", cods: ["C4", "C5", "C6"] },
+    { desc: "sustentar a IA no dia a dia", cods: ["C7", "C8", "C9"] }
   ];
-  const PERTO = 0.5;      // erro com peso >= PERTO conta como "chegou perto"
-  const DIF_FASE = 0.25;  // diferença mínima de média entre fases para apontar a mais forte/fraca
+  const PERTO = 0.5;       // erro com peso >= PERTO conta como "já entende a lógica"
+  const DIF_FRENTE = 0.25; // diferença mínima de média entre frentes para apontar a mais forte/fraca
 
   const lista = itens => itens.length < 2 ? itens.join("")
     : `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`;
   const forte = txt => `<strong>${esc(txt)}</strong>`;
+  const nomes = rs => lista(rs.map(r => forte(r.q.avaliando)));
 
   function textoMapa(results) {
     const ok = results.filter(r => r.ok);
@@ -293,57 +295,52 @@
     const ps = [];
 
     if (miss.length === 0) {
-      ps.push("Você escolheu a melhor decisão nas 9 situações, da estratégia à operação. É o perfil de quem já decide bem sobre IA no trabalho.");
+      ps.push("Você já entende bem de IA aplicada a negócios: escolheu a melhor decisão nas 9 situações, das mais estratégicas às do dia a dia da operação.");
     } else if (ok.length === 0) {
-      ps.push("Em nenhuma das 9 situações sua escolha coincidiu com a melhor decisão. É um retrato honesto do ponto de partida, e a trilha foi desenhada para construir exatamente esse repertório.");
+      ps.push("Você está no começo da construção dessas habilidades: em nenhuma das 9 situações sua escolha coincidiu com a melhor decisão. É comum para quem ainda não aplicou IA no trabalho, e mostra que o espaço para evoluir é grande.");
     } else if (ok.length >= 6) {
-      // Muitos acertos: nomeia só o que pede atenção
-      ps.push(`Você escolheu a melhor decisão em ${ok.length} das 9 situações. ` +
-        (miss.length === 1 ? "O único ponto de atenção está em " : "Os pontos de atenção estão em ") +
-        `${lista(miss.map(r => forte(r.q.competencia)))}.`);
+      ps.push(`Você já entende bem de IA aplicada: decidiu bem em ${ok.length} das 9 situações. ` +
+        (miss.length === 1 ? `A habilidade que ainda pede desenvolvimento é ${nomes(miss)}.`
+                           : `As habilidades que ainda pedem desenvolvimento são ${nomes(miss)}.`));
     } else if (miss.length >= 6) {
-      // Muitos erros: nomeia só onde acertou
-      ps.push(`Sua escolha coincidiu com a melhor decisão em ${ok.length} das 9 situações: ` +
-        `${lista(ok.map(r => forte(r.q.competencia)))}. As outras ${miss.length} competências pedem atenção.`);
+      ps.push(`Você já mostra base em ${nomes(ok)}. As outras ${miss.length} habilidades ainda pedem desenvolvimento.`);
     } else {
-      ps.push(`Suas melhores decisões apareceram em ${lista(ok.map(r => forte(r.q.competencia)))}. ` +
-        `Os pontos de atenção estão em ${lista(miss.map(r => forte(r.q.competencia)))}.`);
+      ps.push(`Seus pontos fortes hoje são ${nomes(ok)}. As habilidades que ainda pedem desenvolvimento são ${nomes(miss)}.`);
     }
 
     if (ok.length && miss.length) {
-      const medias = FASES.map(f => {
+      const medias = FRENTES.map(f => {
         const rs = results.filter(r => f.cods.includes(r.q.cod));
         return { ...f, media: rs.reduce((s, r) => s + r.peso, 0) / rs.length };
       }).sort((a, b) => b.media - a.media);
       const best = medias[0], worst = medias[medias.length - 1];
-      ps.push(best.media - worst.media >= DIF_FASE
-        ? `Olhando as três fases da trilha, você está mais firme em ${forte(best.nome)} (${best.desc}) do que em ${forte(worst.nome)} (${worst.desc}).`
-        : "Seu desempenho é parecido nas três fases da trilha (estratégia, construção e operação), sem uma frente claramente mais fraca.");
+      ps.push(best.media - worst.media >= DIF_FRENTE
+        ? `Você se sai melhor quando o assunto é ${forte(best.desc)} do que quando é ${forte(worst.desc)}.`
+        : "Seu desempenho é equilibrado entre decidir onde usar IA, construir soluções e sustentá-las no dia a dia.");
     }
 
     const perto = miss.filter(r => r.peso >= PERTO);
     if (perto.length) {
-      ps.push(`Em ${lista(perto.map(r => forte(r.q.competencia)))} você chegou perto: o raciocínio ia na direção certa, faltou um ajuste para chegar à melhor decisão.`);
+      ps.push(`Em ${nomes(perto)} você já entende a lógica: o raciocínio ia na direção certa, faltou refinar a decisão.`);
     }
 
     if (miss.length) {
-      // Prioridade: a escolha mais distante da melhor decisão (no empate, o módulo anterior)
+      // Destaque: a escolha mais distante da melhor decisão (no empate, a primeira)
       const alvo = miss.reduce((a, r) => r.peso < a.peso ? r : a);
-      const aula = alvo.q.alternativas[alvo.chosen].aula;
-      ps.push(`<strong>Por onde começar:</strong> ${esc(moduloNome(alvo.q))} · ${esc(alvo.q.competencia)}, onde sua escolha ficou mais distante da melhor decisão. Para o equívoco da sua resposta, a aula indicada é <em>${esc(aula)}</em>.`);
+      ps.push(`<strong>O que mais vale desenvolver agora:</strong> ${esc(alvo.q.avaliando)}, ou seja, ${esc(alvo.q.habilidade)}. Foi onde sua escolha ficou mais distante da melhor decisão.`);
     } else {
-      ps.push("<strong>Próximo passo:</strong> o diagnóstico completo, com as questões de nível avançado, mostra em quais módulos você já pode seguir em ritmo rápido.");
+      ps.push("<strong>Próximo passo:</strong> o diagnóstico completo pode te ajudar a entender sua habilidade em mais profundidade, com situações de nível avançado em cada competência.");
     }
 
     return ps.map(p => `<p>${p}</p>`).join("");
   }
 
   function notaCard(r) {
-    if (r.ok) return "Você escolheu a melhor decisão. O diagnóstico completo confirma se já dá para seguir em ritmo rápido.";
-    const aula = r.q.alternativas[r.chosen].aula;
+    const h = r.q.habilidade;
+    if (r.ok) return `Você já sabe ${h}.`;
     return r.peso >= PERTO
-      ? `Chegou perto: o raciocínio vai na direção certa, mas não é a melhor decisão. Aula sugerida: ${aula}.`
-      : `Sua escolha ficou longe da melhor decisão. Vale percorrer o módulo com atenção, começando por ${aula}.`;
+      ? `Você entende a lógica, mas ainda falta segurança para ${h}.`
+      : `Ainda pede desenvolvimento: ${h}.`;
   }
 
   // ---------- Resultado ----------
@@ -361,7 +358,7 @@
     radarResult._vals = QUESTIONS.map(() => R_EMPTY);
     updateRadar(radarResult, results.map((r, i) => pesoDe(i, r.chosen)), {
       status: results.map(r => r.ok ? "ok" : "miss"),
-      label: `Radar: ${score} de ${QUESTIONS.length} competências com sinal positivo`
+      label: `Radar: ${score} de ${QUESTIONS.length} habilidades como ponto forte`
     });
 
     $(".map-summary").innerHTML = textoMapa(results);
@@ -373,10 +370,10 @@
     $(".map").innerHTML = results.map(r => ({ ...r, nota: notaCard(r) })).map(({ q, ok, nota }) => `
       <li class="map__item ${ok ? "is-ok" : "is-miss"}">
         <div class="map__top">
-          <span class="map__mod">${moduloNome(q)}</span>
-          <span class="badge ${ok ? "badge--ok" : "badge--miss"}">${ok ? "✓ Sinal positivo" : "Ponto de atenção"}</span>
+          <span class="map__mod">Competência</span>
+          <span class="badge ${ok ? "badge--ok" : "badge--miss"}">${ok ? "✓ Ponto forte" : "Para desenvolver"}</span>
         </div>
-        <span class="map__name">${esc(q.competencia)}</span>
+        <span class="map__name">${esc(q.avaliando)}</span>
         <span class="map__note">${esc(nota)}</span>
       </li>`).join("");
 
@@ -385,7 +382,7 @@
         <summary>
           <span class="rv__icon" aria-label="${ok ? "Acertou" : "Errou"}">${ok ? "✓" : "✕"}</span>
           <span class="rv__head">
-            <span class="rv__comp">${i + 1}. ${moduloNome(q)} · ${esc(q.competencia)}</span>
+            <span class="rv__comp">${i + 1}. ${esc(q.avaliando)}</span>
             <span class="rv__q">${esc(q.pergunta)}</span>
           </span>
           <svg class="rv__chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
