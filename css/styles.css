@@ -819,3 +819,67 @@ button { font: inherit; }
 .gab__q { font-family: var(--font-head); font-weight: 700; font-size: 16px; line-height: 1.4; color: var(--texto); margin-bottom: 4px; }
 @media (max-width: 480px) { .gab .rv__alt { grid-template-columns: 18px 1fr; gap: 4px 8px; padding: 12px; } }
 @media (prefers-reduced-motion: reduce) { .gab__toggle svg { transition: none; } }
+
+/* ---------- Banner de compra (como o topo da página oficial da trilha) ---------- */
+.buy {
+  background: var(--surface);
+  border-top: 1px solid #2a2a2a;
+  border-bottom: 1px solid #2a2a2a;
+}
+.buy__inner {
+  display: grid;
+  gap: 40px;
+  align-items: center;
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+@media (min-width: 900px) { .buy__inner { grid-template-columns: 1fr 430px; gap: 64px; } }
+.buy__title { font-size: clamp(2rem, 4.6vw, 3rem); letter-spacing: -0.03em; margin-bottom: 14px; }
+.buy__lead { color: var(--texto-2); font-size: clamp(1.05rem, 1.8vw, 1.2rem); max-width: 46ch; margin-bottom: 28px; }
+.btn--buy {
+  background: var(--vermelhinho);
+  color: var(--branco);
+  border-radius: 6px;
+  min-height: 52px;
+  padding: 12px 48px;
+  font-size: 18px;
+  font-weight: 600;
+}
+.btn--buy:hover { background: #ff7433; box-shadow: 0 8px 24px rgba(241, 101, 34, .3); }
+
+/* Cartão de preço com cantos recortados (formato de "+") */
+.price-card {
+  --nx: 38px; --ny: 36px;
+  background: var(--vermelhinho);
+  color: var(--branco);
+  padding: calc(var(--ny) + 4px) calc(var(--nx) + 30px);
+  clip-path: polygon(
+    var(--nx) 0, calc(100% - var(--nx)) 0, calc(100% - var(--nx)) var(--ny), 100% var(--ny),
+    100% calc(100% - var(--ny)), calc(100% - var(--nx)) calc(100% - var(--ny)), calc(100% - var(--nx)) 100%,
+    var(--nx) 100%, var(--nx) calc(100% - var(--ny)), 0 calc(100% - var(--ny)), 0 var(--ny), var(--nx) var(--ny)
+  );
+}
+.price-card__name { font-family: var(--font-head); font-weight: 700; font-size: 20px; line-height: 1.25; margin-bottom: 26px; }
+.price-card__from { font-size: 16px; opacity: .9; }
+.price-card__value {
+  font-family: var(--font-head);
+  font-weight: 700;
+  font-size: 25px;
+  letter-spacing: -0.01em;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, .7);
+  margin-bottom: 22px;
+}
+.price-card__inc { font-weight: 700; font-size: 15px; margin-bottom: 12px; }
+.price-card__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; font-size: 15px; line-height: 1.4; }
+.price-card__list li { position: relative; padding-left: 28px; }
+.price-card__list li::before { content: "✓"; position: absolute; left: 6px; top: 0; }
+@media (max-width: 899px) {
+  .buy__text { text-align: center; }
+  .buy__lead { margin-left: auto; margin-right: auto; }
+  .btn--buy { width: 100%; max-width: 360px; }
+}
+@media (max-width: 480px) {
+  .price-card { --nx: 20px; --ny: 30px; padding: 42px 44px; }
+  .price-card__value { font-size: 22px; }
+}
