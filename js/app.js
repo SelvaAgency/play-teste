@@ -34,19 +34,25 @@
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
   }[c]));
 
-  const state = { index: 0, answers: new Array(QUESTIONS.length).fill(null) };
+  const state = {
+    index: 0,
+    answers: new Array(QUESTIONS.length).fill(null),
+    committed: new Array(QUESTIONS.length).fill(null) // peso aplicado no radar ao avançar
+  };
 
   // ---------- Radar ----------
-  // Durante o quiz o radar só mostra progresso: cada competência respondida
-  // avança o eixo até um valor neutro, sem revelar acerto (o feedback fica
-  // para o fim, como no diagnóstico completo). No resultado, o eixo vai ao
-  // máximo no acerto e recolhe no erro.
+  // Cada alternativa tem um `peso` (questions.js) que define até onde o eixo da
+  // competência avança. Clicar numa alternativa só dá o "pump"; o peso entra
+  // no gráfico ao avançar para a próxima questão. Assim não dá para clicar nas
+  // quatro e descobrir qual empurra mais. Para mover o eixo já no clique,
+  // basta trocar RADAR_ON_CLICK para true.
+  const RADAR_ON_CLICK = false;
   const SHORT = {
     C1: "Fundamentos", C2: "Priorização", C3: "Valor e KPIs",
     C4: "Abordagem", C5: "Prototipagem", C6: "Guardrails",
     C7: "Operação", C8: "Governança", C9: "Liderança"
   };
-  const R_EMPTY = 0.12, R_ANSWERED = 0.62, R_OK = 1, R_MISS = 0.35;
+  const R_EMPTY = 0.12;
   const W = 340, H = 300, CX = W / 2, CY = H / 2 + 4, RAD = 96;
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -69,7 +75,10 @@
     const points = QUESTIONS.map((q, i) =>
       `<g><title></title><rect class="r-pt" data-i="${i}" width="9" height="9" rx="2"/><circle class="r-hit" data-i="${i}" r="14"/></g>`).join("");
     // Sem rótulos (radar compacto) o viewBox recorta só o círculo
-    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" data-full="0 0 ${W} ${H}" data-tight="${CX - RAD - 8} ${CY - RAD - 8} ${2 * RAD + 16} ${2 * RAD + 16}">${rings}${axes}<polygon class="r-shape"/>${points}${labels}</svg>`;
+    // Grupo externo respira (CSS); o interno recebe o pump (Web Animations).
+    // As transformações se somam, então o pump nunca corta a respiração.
+    const pad = RAD * 0.22;
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" data-full="0 0 ${W} ${H}" data-tight="${CX - RAD - pad} ${CY - RAD - pad} ${2 * (RAD + pad)} ${2 * (RAD + pad)}">${rings}${axes}<g class="r-breath" style="--cx:${CX}px;--cy:${CY}px"><g class="r-pump"><polygon class="r-shape"/>${points}</g></g>${labels}</svg>`;
     el._vals = QUESTIONS.map(() => R_EMPTY);
     drawRadar(el, el._vals);
   }
@@ -112,6 +121,23 @@
     el._raf = requestAnimationFrame(step);
   }
 
+  function pumpRadar(el, strength = 1) {
+    if (reduceMotion) return;
+    const g = $(".r-pump", el);
+    const up = 1 + 0.13 * strength;
+    g.getAnimations().forEach(a => a.cancel());
+    g.animate([
+      { transform: "scale(1)" },
+      { transform: `scale(${up})`, offset: 0.28 },
+      { transform: "scale(0.975)", offset: 0.62 },
+      { transform: "scale(1.008)", offset: 0.82 },
+      { transform: "scale(1)" }
+    ], { duration: 820, easing: "cubic-bezier(.25,.8,.3,1)" });
+    el.classList.add("is-pumping");
+    clearTimeout(el._pumpT);
+    el._pumpT = setTimeout(() => el.classList.remove("is-pumping"), 380);
+  }
+
   function fitRadar() {
     const svg = $("svg", radarQuiz);
     const compact = window.matchMedia("(max-width: 1079px)").matches;
@@ -125,12 +151,16 @@
   fitRadar();
   window.matchMedia("(max-width: 1079px)").addEventListener("change", fitRadar);
 
+  const pesoDe = (i, letter) => QUESTIONS[i].alternativas[letter].peso;
+
   function refreshQuizRadar() {
-    const answered = state.answers.filter(Boolean).length;
-    updateRadar(radarQuiz, state.answers.map(a => a ? R_ANSWERED : R_EMPTY), {
+    const vals = state.committed.map(c => c == null ? R_EMPTY : c);
+    if (RADAR_ON_CLICK && state.answers[state.index]) vals[state.index] = pesoDe(state.index, state.answers[state.index]);
+    const answered = vals.filter(v => v !== R_EMPTY).length;
+    updateRadar(radarQuiz, vals, {
       current: state.index,
-      status: state.answers.map(a => a ? "answered" : ""),
-      label: `Radar de progresso: ${answered} de ${QUESTIONS.length} competências respondidas`
+      status: vals.map(v => v !== R_EMPTY ? "answered" : ""),
+      label: `Radar: ${answered} de ${QUESTIONS.length} competências respondidas`
     });
     $(".radar-card__count").textContent = `${answered} de ${QUESTIONS.length}`;
   }
@@ -182,18 +212,22 @@
     const input = $(`.options input[value="${letter}"]`);
     if (input) input.checked = true;
     $('[data-action="next"]').disabled = false;
-    refreshQuizRadar();
+    if (RADAR_ON_CLICK) refreshQuizRadar();
+    pumpRadar(radarQuiz);
   }
 
   function next() {
     if (!state.answers[state.index]) return;
+    state.committed[state.index] = pesoDe(state.index, state.answers[state.index]);
     if (state.index < QUESTIONS.length - 1) {
       state.index++;
       renderQuestion();
+      pumpRadar(radarQuiz, 0.6);
       window.scrollTo(0, 0);
     } else {
       renderResult();
       show("result");
+      setTimeout(() => pumpRadar(radarResult), 450);
     }
   }
 
@@ -214,7 +248,7 @@
     $(".result-hero__lead").textContent = tier.lead;
 
     radarResult._vals = QUESTIONS.map(() => R_EMPTY);
-    updateRadar(radarResult, results.map(r => r.ok ? R_OK : R_MISS), {
+    updateRadar(radarResult, results.map((r, i) => pesoDe(i, r.chosen)), {
       status: results.map(r => r.ok ? "ok" : "miss"),
       label: `Radar: ${score} de ${QUESTIONS.length} competências com sinal positivo`
     });
@@ -270,6 +304,7 @@
   function restart() {
     state.index = 0;
     state.answers.fill(null);
+    state.committed.fill(null);
     renderQuestion();
     show("quiz");
   }

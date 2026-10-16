@@ -135,6 +135,8 @@ button { font: inherit; }
 .btn:disabled { opacity: .35; cursor: not-allowed; }
 .btn--lg { min-height: 58px; padding: 16px 32px; font-size: 18px; }
 .btn--green { background: var(--verdinho); color: var(--pretinho); border-color: var(--pretinho); }
+.btn--orange { background: var(--vermelhinho); color: var(--pretinho); border-color: var(--pretinho); }
+.btn--orange:hover { box-shadow: 4px 4px 0 var(--texto); }
 .btn--green:hover { box-shadow: 4px 4px 0 var(--texto); }
 .btn--dark { background: var(--texto); color: var(--pretinho); }
 .btn--ghost { background: transparent; color: var(--texto); border-color: var(--cinza-borda); }
@@ -187,24 +189,7 @@ button { font: inherit; }
   color: var(--vermelhinho);
 }
 
-/* Blocos em pixel, ecoando o símbolo do logo */
-.hero__blocks {
-  position: absolute;
-  right: -20px;
-  bottom: -20px;
-  width: 300px;
-  height: 300px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  opacity: .9;
-}
-.hero__blocks span:nth-child(1) { background: var(--amarelinho); }
-.hero__blocks span:nth-child(2) { background: transparent; }
-.hero__blocks span:nth-child(3) { background: var(--vermelhinho); }
-.hero__blocks span:nth-child(4) { background: var(--verdinho); }
-@media (max-width: 899px) { .hero__blocks { width: 120px; height: 120px; right: -10px; bottom: -10px; opacity: .55; } }
-@media (max-width: 599px) { .hero__blocks { display: none; } .hero .btn--lg { width: 100%; } }
+@media (max-width: 599px) { .hero .btn--lg { width: 100%; } }
 
 .how {
   display: grid;
@@ -249,21 +234,24 @@ button { font: inherit; }
 
 .quiz__meta {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
+  justify-content: space-between;
   gap: 8px 14px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 .quiz__count {
+  flex: 0 0 auto;
   font-family: var(--font-head);
   font-weight: 800;
-  font-size: 14px;
+  font-size: 15px;
+  color: var(--texto-2);
 }
 .quiz__comp {
   font-family: var(--font-head);
-  font-weight: 700;
-  font-size: 13px;
-  padding: 4px 12px;
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1.3;
+  padding: 7px 16px;
   border-radius: var(--radius-pill);
   background: var(--amarelinho);
   color: var(--pretinho);
@@ -315,9 +303,9 @@ button { font: inherit; }
 .option:has(input:checked) {
   border-color: var(--texto);
   background: var(--surface-2);
-  box-shadow: 4px 4px 0 var(--verdinho);
+  box-shadow: 4px 4px 0 var(--amarelinho);
 }
-.option:has(input:checked) .option__letter { background: var(--verdinho); color: var(--pretinho); }
+.option:has(input:checked) .option__letter { background: var(--amarelinho); color: var(--pretinho); }
 .option:has(input:focus-visible) { outline: 3px solid var(--amarelinho); outline-offset: 2px; }
 
 .quiz__nav {
@@ -539,7 +527,7 @@ button { font: inherit; }
   color: var(--branco);
   transition: background-color .15s ease, color .15s ease, border-color .15s ease;
 }
-.social a:hover { background: var(--verdinho); border-color: var(--verdinho); color: var(--pretinho); }
+.social a:hover { background: var(--vermelhinho); border-color: var(--vermelhinho); color: var(--pretinho); }
 .footer__col { display: flex; flex-direction: column; gap: 10px; }
 .footer__col h4 {
   font-family: var(--font-head);
@@ -549,8 +537,8 @@ button { font: inherit; }
   margin: 0 0 6px;
 }
 .footer__col a, .footer__bottom a { color: rgba(255,255,255,.7); text-decoration: none; }
-.footer__col a:hover, .footer__bottom a:hover { color: var(--verdinho); }
-.footer a:focus-visible { outline: 2px solid var(--verdinho); outline-offset: 3px; }
+.footer__col a:hover, .footer__bottom a:hover { color: var(--vermelhinho); }
+.footer a:focus-visible { outline: 2px solid var(--vermelhinho); outline-offset: 3px; }
 .footer__bottom {
   display: flex;
   flex-wrap: wrap;
@@ -650,4 +638,21 @@ button { font: inherit; }
   .quiz-layout .radar .r-label { display: none; }
   .quiz-layout .radar svg { overflow: hidden; }
   .quiz-layout .radar-card__note { text-align: left; margin: 0; }
+}
+
+/* Radar vivo: respiração contínua (CSS) + "pump" a cada clique (Web Animations no grupo interno) */
+.radar .r-breath {
+  transform-box: view-box;
+  transform-origin: var(--cx) var(--cy);
+  animation: radar-breath 3.6s ease-in-out infinite;
+}
+@keyframes radar-breath {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.035); }
+}
+.radar .r-pump { transform-box: view-box; transform-origin: var(--cx) var(--cy); }
+.radar .r-shape { transition: fill .4s ease; }
+.radar.is-pumping .r-shape { fill: rgba(247, 200, 0, .5); }
+@media (prefers-reduced-motion: reduce) {
+  .radar .r-breath { animation: none; }
 }
