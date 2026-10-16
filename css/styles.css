@@ -582,3 +582,72 @@ button { font: inherit; }
   .option { padding: 14px; gap: 12px; }
   .map__item, .how__item { padding: 18px; }
 }
+
+/* ---------- Radar ---------- */
+.quiz-layout { display: grid; gap: 32px; max-width: 760px; }
+@media (min-width: 1080px) {
+  .quiz-layout { max-width: var(--wrap); grid-template-columns: minmax(0, 1fr) 340px; gap: 48px; align-items: start; }
+  .quiz-layout .radar-card { position: sticky; top: 96px; }
+}
+
+.radar-card {
+  background: var(--surface);
+  border: 1px solid #2a2a2a;
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.radar-card__title {
+  font-family: var(--font-head);
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--pretinho);
+  background: var(--amarelinho);
+  margin: -20px -20px 16px;
+  padding: 12px 20px;
+  border-radius: var(--radius) var(--radius) 0 0;
+  text-align: center;
+}
+.radar-card__note { font-size: 13px; color: var(--texto-2); text-align: center; margin-top: 8px; }
+.radar-card__note strong { color: var(--texto); }
+.radar { max-width: 320px; margin: 0 auto; }
+.radar svg { display: block; width: 100%; height: auto; overflow: visible; }
+.radar .r-grid { fill: none; stroke: #3a3a3a; stroke-width: 1; }
+.radar .r-axis { stroke: #333; stroke-width: 1; }
+.radar .r-axis.is-current { stroke: var(--vermelhinho); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.radar .r-shape { fill: rgba(247, 200, 0, .32); stroke: var(--amarelinho); stroke-width: 2; stroke-linejoin: round; }
+.radar .r-pt { fill: var(--amarelinho); stroke: var(--surface); stroke-width: 2; }
+.radar .r-pt.is-miss { fill: var(--vermelhinho); }
+.radar .r-hit { fill: transparent; cursor: default; }
+.radar .r-label { font-family: var(--font-head); font-size: 11px; font-weight: 600; fill: var(--texto-2); }
+.radar .r-label.is-current { fill: var(--vermelhinho); font-weight: 800; }
+
+.map-layout { display: grid; gap: 16px; margin-bottom: 72px; }
+.map-layout .map { margin-bottom: 0; }
+@media (min-width: 980px) {
+  .map-layout { grid-template-columns: 360px minmax(0, 1fr); align-items: start; }
+  .map-layout .map { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* Telas menores: radar compacto acima da questão, para a mudança ficar visível */
+@media (max-width: 1079px) {
+  .quiz-layout { gap: 20px; }
+  .quiz-layout .radar-card {
+    order: -1;
+    display: grid;
+    grid-template-columns: 104px 1fr;
+    gap: 6px 14px;
+    align-items: center;
+    padding: 12px 14px;
+  }
+  .quiz-layout .radar-card__title {
+    grid-column: 1 / -1;
+    margin: -12px -14px 4px;
+    padding: 7px 14px;
+    font-size: 14px;
+    text-align: left;
+  }
+  .quiz-layout .radar { max-width: 104px; margin: 0; }
+  .quiz-layout .radar .r-label { display: none; }
+  .quiz-layout .radar svg { overflow: hidden; }
+  .quiz-layout .radar-card__note { text-align: left; margin: 0; }
+}

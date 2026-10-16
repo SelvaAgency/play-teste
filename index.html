@@ -67,7 +67,8 @@
 
     <!-- QUIZ -->
     <section class="screen screen--quiz" data-screen="quiz" hidden>
-      <div class="wrap wrap--narrow">
+      <div class="wrap quiz-layout">
+        <div class="quiz__main">
         <div class="progress" aria-hidden="true"></div>
         <div class="quiz__meta">
           <span class="quiz__count"></span>
@@ -82,6 +83,12 @@
           <button class="btn btn--dark" data-action="next" disabled>Próxima</button>
         </div>
         <p class="quiz__hint">Você pode usar as teclas A, B, C e D para escolher e Enter para avançar.</p>
+        </div>
+        <aside class="radar-card">
+          <p class="radar-card__title">Seu radar</p>
+          <div class="radar" data-radar="quiz"></div>
+          <p class="radar-card__note"><strong class="radar-card__count">0 de 9</strong> competências respondidas. Suas forças e pontos de atenção aparecem no resultado.</p>
+        </aside>
       </div>
     </section>
 
@@ -107,7 +114,14 @@
           <h2>Seu mapa nas 9 competências</h2>
           <p class="muted">Cada competência foi medida por uma única situação, de nível intermediário. É um sinal, não um nível. O diagnóstico completo mede cada competência em três níveis.</p>
         </div>
-        <ol class="map"></ol>
+        <div class="map-layout">
+          <div class="radar-card radar-card--result">
+            <p class="radar-card__title">Seu radar em IA</p>
+            <div class="radar" data-radar="result"></div>
+            <p class="radar-card__note">Ponta externa = sinal positivo. Ponta recolhida = ponto de atenção.</p>
+          </div>
+          <ol class="map"></ol>
+        </div>
       </div>
 
       <div class="cta">
