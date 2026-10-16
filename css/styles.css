@@ -283,7 +283,7 @@ button { font: inherit; }
   cursor: pointer;
   transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
 }
-.option:hover { border-color: var(--texto); }
+.option:hover { border-color: var(--amarelinho); }
 .option input { position: absolute; opacity: 0; pointer-events: none; }
 .option__letter {
   flex: 0 0 auto;
@@ -301,7 +301,7 @@ button { font: inherit; }
 }
 .option__text { padding-top: 5px; font-size: 16.5px; }
 .option:has(input:checked) {
-  border-color: var(--texto);
+  border-color: var(--amarelinho);
   background: var(--surface-2);
   box-shadow: 4px 4px 0 var(--amarelinho);
 }
@@ -603,7 +603,7 @@ button { font: inherit; }
 .radar .r-axis { stroke: #333; stroke-width: 1; }
 .radar .r-axis.is-current { stroke: var(--vermelhinho); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .radar .r-shape { fill: rgba(247, 200, 0, .32); stroke: var(--amarelinho); stroke-width: 2; stroke-linejoin: round; }
-.radar .r-pt { fill: var(--amarelinho); stroke: var(--surface); stroke-width: 2; }
+.radar .r-pt { fill: var(--amarelinho); stroke: var(--surface); stroke-width: 1.5; }
 .radar .r-pt.is-miss { fill: var(--vermelhinho); }
 .radar .r-hit { fill: transparent; cursor: default; }
 .radar .r-label { font-family: var(--font-head); font-size: 11px; font-weight: 600; fill: var(--texto-2); }
@@ -655,4 +655,8 @@ button { font: inherit; }
 .radar.is-pumping .r-shape { fill: rgba(247, 200, 0, .5); }
 @media (prefers-reduced-motion: reduce) {
   .radar .r-breath { animation: none; }
+}
+
+@media (max-width: 480px) {
+  .quiz__comp { font-size: 14px; padding: 6px 12px; border-radius: 16px; }
 }

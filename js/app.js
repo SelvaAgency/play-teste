@@ -73,7 +73,7 @@
       return `<text class="r-label" data-i="${i}" x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${anchor}">${SHORT[q.cod]}</text>`;
     }).join("");
     const points = QUESTIONS.map((q, i) =>
-      `<g><title></title><rect class="r-pt" data-i="${i}" width="9" height="9" rx="2"/><circle class="r-hit" data-i="${i}" r="14"/></g>`).join("");
+      `<g><title></title><circle class="r-pt" data-i="${i}" r="3.5"/><circle class="r-hit" data-i="${i}" r="14"/></g>`).join("");
     // Sem rótulos (radar compacto) o viewBox recorta só o círculo
     // Grupo externo respira (CSS); o interno recebe o pump (Web Animations).
     // As transformações se somam, então o pump nunca corta a respiração.
@@ -87,8 +87,8 @@
     $(".r-shape", el).setAttribute("points", poly(vals));
     $$(".r-pt", el).forEach((r, i) => {
       const [x, y] = pt(i, vals[i]);
-      r.setAttribute("x", (x - 4.5).toFixed(1));
-      r.setAttribute("y", (y - 4.5).toFixed(1));
+      r.setAttribute("cx", x.toFixed(1));
+      r.setAttribute("cy", y.toFixed(1));
     });
     $$(".r-hit", el).forEach((c, i) => {
       const [x, y] = pt(i, vals[i]);
@@ -151,6 +151,9 @@
   fitRadar();
   window.matchMedia("(max-width: 1079px)").addEventListener("change", fitRadar);
 
+  // "M2" vira "Módulo 2"
+  const moduloNome = q => `Módulo ${q.modulo.replace(/^M/, "")}`;
+
   const pesoDe = (i, letter) => QUESTIONS[i].alternativas[letter].peso;
 
   function refreshQuizRadar() {
@@ -185,7 +188,7 @@
     });
 
     $(".quiz__count").textContent = `${state.index + 1} de ${QUESTIONS.length}`;
-    $(".quiz__comp").textContent = `${q.modulo} · ${q.competencia}`;
+    $(".quiz__comp").textContent = `${moduloNome(q)} · ${q.competencia}`;
     $(".quiz__question").textContent = q.pergunta;
 
     $(".options").innerHTML =
@@ -256,7 +259,7 @@
     $(".map").innerHTML = results.map(({ q, ok }) => `
       <li class="map__item ${ok ? "is-ok" : "is-miss"}">
         <div class="map__top">
-          <span class="map__mod">${q.modulo}</span>
+          <span class="map__mod">${moduloNome(q)}</span>
           <span class="badge ${ok ? "badge--ok" : "badge--miss"}">${ok ? "✓ Sinal positivo" : "Ponto de atenção"}</span>
         </div>
         <span class="map__name">${esc(q.competencia)}</span>
@@ -270,7 +273,7 @@
         <summary>
           <span class="rv__icon" aria-label="${ok ? "Acertou" : "Errou"}">${ok ? "✓" : "✕"}</span>
           <span class="rv__head">
-            <span class="rv__comp">${i + 1}. ${q.modulo} · ${esc(q.competencia)}</span>
+            <span class="rv__comp">${i + 1}. ${moduloNome(q)} · ${esc(q.competencia)}</span>
             <span class="rv__q">${esc(q.pergunta)}</span>
           </span>
           <svg class="rv__chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
