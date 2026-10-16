@@ -73,7 +73,7 @@
       return `<text class="r-label" data-i="${i}" x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${anchor}">${SHORT[q.cod]}</text>`;
     }).join("");
     const points = QUESTIONS.map((q, i) =>
-      `<g><title></title><circle class="r-pt" data-i="${i}" r="3.5"/><circle class="r-hit" data-i="${i}" r="14"/></g>`).join("");
+      `<g><title></title><circle class="r-pt" data-i="${i}" r="2.5"/><circle class="r-hit" data-i="${i}" r="14"/></g>`).join("");
     // Sem rótulos (radar compacto) o viewBox recorta só o círculo
     // Grupo externo respira (CSS); o interno recebe o pump (Web Animations).
     // As transformações se somam, então o pump nunca corta a respiração.
@@ -121,21 +121,49 @@
     el._raf = requestAnimationFrame(step);
   }
 
+  // Pump em forma de balão: enche rápido, esvazia devagar e termina com
+  // pulsadas cada vez menores. `strength` 1 = clique; ~0.35 = hover.
   function pumpRadar(el, strength = 1) {
     if (reduceMotion) return;
     const g = $(".r-pump", el);
-    const up = 1 + 0.13 * strength;
+    const now = performance.now();
+    // Um hover não interrompe um pump maior que ainda está na primeira metade
+    if (strength < (el._pumpStrength || 0) && now < (el._pumpMid || 0)) return;
+    const s = strength;
+    const k = v => `scale(${v.toFixed(4)})`;
+    const inflate = "cubic-bezier(.2,.9,.3,1)", soft = "ease-in-out";
+    const duration = 700 + 1300 * s;
     g.getAnimations().forEach(a => a.cancel());
     g.animate([
-      { transform: "scale(1)" },
-      { transform: `scale(${up})`, offset: 0.28 },
-      { transform: "scale(0.975)", offset: 0.62 },
-      { transform: "scale(1.008)", offset: 0.82 },
-      { transform: "scale(1)" }
-    ], { duration: 820, easing: "cubic-bezier(.25,.8,.3,1)" });
-    el.classList.add("is-pumping");
-    clearTimeout(el._pumpT);
-    el._pumpT = setTimeout(() => el.classList.remove("is-pumping"), 380);
+      { transform: k(1), easing: inflate },
+      { transform: k(1 + 0.14 * s), offset: 0.16, easing: soft },
+      { transform: k(1 - 0.03 * s), offset: 0.55, easing: soft },
+      { transform: k(1 + 0.035 * s), offset: 0.68, easing: soft },
+      { transform: k(1 - 0.012 * s), offset: 0.79, easing: soft },
+      { transform: k(1 + 0.012 * s), offset: 0.89, easing: soft },
+      { transform: k(1) }
+    ], { duration });
+    el._pumpStrength = s;
+    el._pumpMid = now + duration * 0.5;
+    if (s >= 0.6) {
+      el.classList.add("is-pumping");
+      clearTimeout(el._pumpT);
+      el._pumpT = setTimeout(() => el.classList.remove("is-pumping"), 420);
+    }
+  }
+
+  // Cabeçalho "Avaliando: <competência>", trocando com uma transição curta
+  function setAvaliando(text) {
+    const span = $(".radar-card__comp");
+    if (span.textContent === text) return;
+    if (reduceMotion || !span.textContent) { span.textContent = text; return; }
+    const live = $(".radar-card__live");
+    live.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-6px)" }],
+      { duration: 160, easing: "ease-in" }).onfinish = () => {
+      span.textContent = text;
+      live.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }],
+        { duration: 220, easing: "ease-out" });
+    };
   }
 
   function fitRadar() {
@@ -189,6 +217,7 @@
 
     $(".quiz__count").textContent = `${state.index + 1} de ${QUESTIONS.length}`;
     $(".quiz__comp").textContent = `${moduloNome(q)} · ${q.competencia}`;
+    setAvaliando(q.competencia);
     $(".quiz__question").textContent = q.pergunta;
 
     $(".options").innerHTML =
@@ -324,6 +353,16 @@
     if (action === "prev") prev();
     if (action === "restart") restart();
   });
+
+  // Hover numa alternativa: pump pequeno (só mouse; no toque o clique já pulsa)
+  let hovered = null;
+  $(".options").addEventListener("pointerover", e => {
+    const opt = e.target.closest(".option");
+    if (!opt || opt === hovered || e.pointerType !== "mouse") return;
+    hovered = opt;
+    pumpRadar(radarQuiz, 0.35);
+  });
+  $(".options").addEventListener("pointerleave", () => { hovered = null; });
 
   $(".options").addEventListener("change", e => {
     if (e.target.name === "opt") choose(e.target.value);
