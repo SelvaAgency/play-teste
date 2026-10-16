@@ -204,7 +204,29 @@
   // ---------- Telas ----------
   function show(name) {
     $$("[data-screen]").forEach(s => { s.hidden = s.dataset.screen !== name; });
+    // Teste: só a tela de resultado em tema claro, como no site oficial
+    document.body.classList.toggle("theme-light", name === "result");
+    if (name === "result") watchBuyVideo();
     window.scrollTo(0, 0);
+  }
+
+  // Vídeo do banner de compra: carrega só quando o banner chega perto da tela
+  // (os arquivos têm 58–87 MB) e escolhe a versão mobile em telas estreitas.
+  function watchBuyVideo() {
+    const video = $(".buy__video");
+    if (!video || video.dataset.loaded || reduceMotion) return;
+    const load = () => {
+      if (video.dataset.loaded) return;
+      video.dataset.loaded = "1";
+      const mobile = window.matchMedia("(max-width: 767px)").matches;
+      video.src = mobile ? video.dataset.srcMobile : video.dataset.srcDesktop;
+      video.play().catch(() => {});
+    };
+    if (!("IntersectionObserver" in window)) return load();
+    const io = new IntersectionObserver(entries => {
+      if (entries.some(e => e.isIntersecting)) { io.disconnect(); load(); }
+    }, { rootMargin: "600px 0px" });
+    io.observe($(".buy"));
   }
 
   // ---------- Quiz ----------

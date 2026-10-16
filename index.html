@@ -141,6 +141,11 @@
 
       <!-- Banner de compra, no formato da página oficial da trilha -->
       <section class="buy" aria-labelledby="buy-title">
+        <!-- Mesmo vídeo de fundo da página oficial; o src entra via JS só quando o banner se aproxima da tela -->
+        <video class="buy__video" muted loop playsinline preload="none" aria-hidden="true"
+          data-src-desktop="https://scaffoldplay.com.br/wp-content/uploads/2026/06/Video_reduzido_Play_Atulizado.mp4"
+          data-src-mobile="https://scaffoldplay.com.br/wp-content/uploads/2026/06/Video_reduzido_Play_Atulizado_Mobile.mp4"></video>
+        <div class="buy__overlay" aria-hidden="true"></div>
         <div class="wrap buy__inner">
           <div class="buy__text">
             <p class="kicker">Trilha de Liderança</p>
@@ -154,6 +159,7 @@
             <p class="price-card__value">12x de 16,58 sem juros</p>
             <p class="price-card__inc">Incluso por 12 meses:</p>
             <ul class="price-card__list">
+              <li><strong>Diagnóstico completo e plano de aulas personalizado</strong></li>
               <li>Conteúdo disponível online</li>
               <li>15h de aprendizado</li>
               <li>Toolkits, templates e guias práticos</li>

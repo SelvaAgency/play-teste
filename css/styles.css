@@ -822,10 +822,24 @@ button { font: inherit; }
 
 /* ---------- Banner de compra (como o topo da página oficial da trilha) ---------- */
 .buy {
-  background: var(--surface);
-  border-top: 1px solid #2a2a2a;
-  border-bottom: 1px solid #2a2a2a;
+  /* Sempre escuro (vídeo + véu), em qualquer tema */
+  --texto: #f2f2f2;
+  --texto-2: rgba(255, 255, 255, .85);
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--pretinho);
+  color: var(--texto);
 }
+.buy__video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -2;
+}
+.buy__overlay { position: absolute; inset: 0; background: rgba(18, 18, 18, .55); z-index: -1; }
 .buy__inner {
   display: grid;
   gap: 40px;
@@ -874,6 +888,7 @@ button { font: inherit; }
 .price-card__list { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; font-size: 15px; line-height: 1.4; }
 .price-card__list li { position: relative; padding-left: 28px; }
 .price-card__list li::before { content: "✓"; position: absolute; left: 6px; top: 0; }
+.price-card__list strong { font-weight: 700; }
 @media (max-width: 899px) {
   .buy__text { text-align: center; }
   .buy__lead { margin-left: auto; margin-right: auto; }
@@ -883,3 +898,37 @@ button { font: inherit; }
   .price-card { --nx: 20px; --ny: 30px; padding: 42px 44px; }
   .price-card__value { font-size: 22px; }
 }
+
+/* ---------- Teste: tela de resultado em tema claro ---------- */
+body.theme-light {
+  color-scheme: light;
+  --bg: #ffffff;
+  --surface: #f2f2f2;
+  --surface-2: #e9e9e9;
+  --texto: #121212;
+  --texto-2: #4a4a4a;
+  --cinza-bg: #f2f2f2;
+  --cinza-borda: #cfcfcf;
+  --cinza-texto: #686868;
+}
+.theme-light .topbar { border-bottom-color: #e8e8e8; }
+.theme-light .topbar__logo img { filter: none; }
+.theme-light .topbar__tag { color: var(--branco); }
+/* Bloco do resultado continua escuro, como na versão original */
+.theme-light .result-hero {
+  --surface: #121212;
+  --texto: #f2f2f2;
+  --texto-2: #b5b5b5;
+  color: var(--texto);
+  border-bottom: none;
+}
+.theme-light .radar-card { border-color: #e2e2e2; }
+.theme-light .radar .r-grid { stroke: #d6d6d6; }
+.theme-light .radar .r-axis { stroke: #e0e0e0; }
+.theme-light .radar .r-shape { fill: rgba(255, 138, 0, .22); }
+.theme-light .map__item.is-ok { background: #effbf1; }
+.theme-light .map__item.is-miss { background: #fff4ee; }
+.theme-light .rv__alt.is-correct { background: #effbf1; }
+.theme-light .rv__alt.is-chosen-wrong { background: #fff4ee; }
+.theme-light .tag--chosen { color: var(--branco); }
+.theme-light .map-summary p:last-child { background: #f6f6f6; }
