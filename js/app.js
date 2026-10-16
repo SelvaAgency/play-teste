@@ -343,6 +343,42 @@
       : `Ainda pede desenvolvimento: ${h}.`;
   }
 
+  // Gabarito dentro do card: a pergunta e as 4 alternativas com o feedback de cada uma
+  function gabarito(q, chosen) {
+    const alts = LETTERS.map(L => {
+      const a = q.alternativas[L];
+      const isCorrect = L === q.correta;
+      const isChosen = L === chosen;
+      const cls = isCorrect ? "is-correct" : (isChosen ? "is-chosen-wrong" : "");
+      const tags = [
+        isChosen ? '<span class="tag tag--chosen">Sua resposta</span>' : "",
+        isCorrect ? '<span class="tag tag--correct">Correta</span>' : ""
+      ].join("");
+      const aula = !isCorrect && a.url
+        ? `<p class="rv__alt-aula">Aula recomendada: <a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.aula)}</a></p>`
+        : "";
+      return `
+        <div class="rv__alt ${cls}">
+          <span class="rv__alt-letter">${L}</span>
+          <span class="rv__alt-text">${esc(a.texto)}</span>
+          ${tags ? `<span class="rv__alt-tags">${tags}</span>` : ""}
+          <p class="rv__alt-fb">${esc(a.feedback)}</p>
+          ${aula}
+        </div>`;
+    }).join("");
+    return `
+      <details class="gab">
+        <summary class="gab__toggle">
+          <span class="gab__open">Ver gabarito</span><span class="gab__close">Ocultar gabarito</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </summary>
+        <div class="gab__body">
+          <p class="gab__q">${esc(q.pergunta)}</p>
+          ${alts}
+        </div>
+      </details>`;
+  }
+
   // ---------- Resultado ----------
   function renderResult() {
     const results = QUESTIONS.map((q, i) => ({
@@ -367,7 +403,7 @@
       respostas: results.map(r => ({ competencia: r.q.cod, resposta: r.chosen, correta: r.ok }))
     });
 
-    $(".map").innerHTML = results.map(r => ({ ...r, nota: notaCard(r) })).map(({ q, ok, nota }) => `
+    $(".map").innerHTML = results.map(r => ({ ...r, nota: notaCard(r) })).map(({ q, ok, nota, chosen }) => `
       <li class="map__item ${ok ? "is-ok" : "is-miss"}">
         <div class="map__top">
           <span class="map__mod">Competência</span>
@@ -375,42 +411,9 @@
         </div>
         <span class="map__name">${esc(q.avaliando)}</span>
         <span class="map__note">${esc(nota)}</span>
+        ${gabarito(q, chosen)}
       </li>`).join("");
 
-    $(".review").innerHTML = results.map(({ q, chosen, ok }, i) => `
-      <details class="rv ${ok ? "is-ok" : "is-miss"}">
-        <summary>
-          <span class="rv__icon" aria-label="${ok ? "Acertou" : "Errou"}">${ok ? "✓" : "✕"}</span>
-          <span class="rv__head">
-            <span class="rv__comp">${i + 1}. ${esc(q.avaliando)}</span>
-            <span class="rv__q">${esc(q.pergunta)}</span>
-          </span>
-          <svg class="rv__chev" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
-        </summary>
-        <div class="rv__body">
-          ${LETTERS.map(L => {
-            const a = q.alternativas[L];
-            const isCorrect = L === q.correta;
-            const isChosen = L === chosen;
-            const cls = isCorrect ? "is-correct" : (isChosen ? "is-chosen-wrong" : "");
-            const tags = [
-              isChosen ? '<span class="tag tag--chosen">Sua resposta</span>' : "",
-              isCorrect ? '<span class="tag tag--correct">Correta</span>' : ""
-            ].join("");
-            const aula = !isCorrect && a.url
-              ? `<p class="rv__alt-aula">Aula recomendada: <a href="${esc(a.url)}" target="_blank" rel="noopener">${esc(a.aula)}</a></p>`
-              : "";
-            return `
-              <div class="rv__alt ${cls}">
-                <span class="rv__alt-letter">${L}</span>
-                <span class="rv__alt-text">${esc(a.texto)}</span>
-                ${tags ? `<span class="rv__alt-tags">${tags}</span>` : ""}
-                <p class="rv__alt-fb">${esc(a.feedback)}</p>
-                ${aula}
-              </div>`;
-          }).join("")}
-        </div>
-      </details>`).join("");
   }
 
   function restart() {

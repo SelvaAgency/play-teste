@@ -789,3 +789,33 @@ button { font: inherit; }
 .result-cta__title { font-family: var(--font-head); font-weight: 800; font-size: clamp(1.25rem, 2.6vw, 1.55rem); letter-spacing: -0.02em; margin-bottom: 6px; }
 .result-cta__lead { color: var(--texto-2); max-width: 60ch; }
 @media (max-width: 859px) { .result-cta .btn { width: 100%; } }
+
+/* Gabarito dentro de cada card do mapa */
+.map { align-items: start; }
+.map__item:has(.gab[open]) { grid-column: 1 / -1; }
+.gab { margin-top: 4px; }
+.gab__toggle {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-head);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cinza-texto);
+  cursor: pointer;
+  padding: 4px 0;
+  transition: color .15s ease;
+}
+.gab__toggle::-webkit-details-marker { display: none; }
+.gab__toggle:hover { color: var(--texto); }
+.gab__toggle:focus-visible { outline: 2px solid var(--verdinho); outline-offset: 3px; border-radius: 4px; }
+.gab__toggle svg { transition: transform .2s ease; }
+.gab[open] .gab__toggle svg { transform: rotate(180deg); }
+.gab__close { display: none; }
+.gab[open] .gab__open { display: none; }
+.gab[open] .gab__close { display: inline; }
+.gab__body { display: grid; gap: 10px; margin-top: 12px; }
+.gab__q { font-family: var(--font-head); font-weight: 700; font-size: 16px; line-height: 1.4; color: var(--texto); margin-bottom: 4px; }
+@media (max-width: 480px) { .gab .rv__alt { grid-template-columns: 18px 1fr; gap: 4px 8px; padding: 12px; } }
+@media (prefers-reduced-motion: reduce) { .gab__toggle svg { transition: none; } }
