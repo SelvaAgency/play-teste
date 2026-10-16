@@ -4,6 +4,10 @@
   // TODO: apontar para a URL do diagnóstico completo (27 questões) quando estiver no ar.
   const FULL_TEST_URL = "https://scaffoldplay.com.br/";
 
+  // TODO: endpoint que recebe os leads (CRM / automação). Vazio = não envia nada.
+  // Recebe JSON: { email, etapa: "inicio" | "resultado", pontuacao?, respostas? }
+  const LEAD_ENDPOINT = "";
+
   const QUESTIONS = window.QUESTIONS;
   const LETTERS = ["A", "B", "C", "D"];
 
@@ -35,6 +39,7 @@
   }[c]));
 
   const state = {
+    email: "",
     index: 0,
     answers: new Array(QUESTIONS.length).fill(null),
     committed: new Array(QUESTIONS.length).fill(null) // peso aplicado no radar ao avançar
@@ -259,7 +264,6 @@
     } else {
       renderResult();
       show("result");
-      setTimeout(() => pumpRadar(radarResult), 450);
     }
   }
 
@@ -269,9 +273,84 @@
     renderQuestion();
   }
 
+  // ---------- Texto personalizado do mapa ----------
+  // As 9 competências agrupadas nas três fases da trilha.
+  const FASES = [
+    { nome: "estratégia", desc: "decidir onde e por que usar IA", cods: ["C1", "C2", "C3"] },
+    { nome: "construção", desc: "escolher, prototipar e validar a solução", cods: ["C4", "C5", "C6"] },
+    { nome: "operação", desc: "sustentar a IA no dia a dia, com governança e adoção", cods: ["C7", "C8", "C9"] }
+  ];
+  const PERTO = 0.5;      // erro com peso >= PERTO conta como "chegou perto"
+  const DIF_FASE = 0.25;  // diferença mínima de média entre fases para apontar a mais forte/fraca
+
+  const lista = itens => itens.length < 2 ? itens.join("")
+    : `${itens.slice(0, -1).join(", ")} e ${itens[itens.length - 1]}`;
+  const forte = txt => `<strong>${esc(txt)}</strong>`;
+
+  function textoMapa(results) {
+    const ok = results.filter(r => r.ok);
+    const miss = results.filter(r => !r.ok);
+    const ps = [];
+
+    if (miss.length === 0) {
+      ps.push("Você escolheu a melhor decisão nas 9 situações, da estratégia à operação. É o perfil de quem já decide bem sobre IA no trabalho.");
+    } else if (ok.length === 0) {
+      ps.push("Em nenhuma das 9 situações sua escolha coincidiu com a melhor decisão. É um retrato honesto do ponto de partida, e a trilha foi desenhada para construir exatamente esse repertório.");
+    } else if (ok.length >= 6) {
+      // Muitos acertos: nomeia só o que pede atenção
+      ps.push(`Você escolheu a melhor decisão em ${ok.length} das 9 situações. ` +
+        (miss.length === 1 ? "O único ponto de atenção está em " : "Os pontos de atenção estão em ") +
+        `${lista(miss.map(r => forte(r.q.competencia)))}.`);
+    } else if (miss.length >= 6) {
+      // Muitos erros: nomeia só onde acertou
+      ps.push(`Sua escolha coincidiu com a melhor decisão em ${ok.length} das 9 situações: ` +
+        `${lista(ok.map(r => forte(r.q.competencia)))}. As outras ${miss.length} competências pedem atenção.`);
+    } else {
+      ps.push(`Suas melhores decisões apareceram em ${lista(ok.map(r => forte(r.q.competencia)))}. ` +
+        `Os pontos de atenção estão em ${lista(miss.map(r => forte(r.q.competencia)))}.`);
+    }
+
+    if (ok.length && miss.length) {
+      const medias = FASES.map(f => {
+        const rs = results.filter(r => f.cods.includes(r.q.cod));
+        return { ...f, media: rs.reduce((s, r) => s + r.peso, 0) / rs.length };
+      }).sort((a, b) => b.media - a.media);
+      const best = medias[0], worst = medias[medias.length - 1];
+      ps.push(best.media - worst.media >= DIF_FASE
+        ? `Olhando as três fases da trilha, você está mais firme em ${forte(best.nome)} (${best.desc}) do que em ${forte(worst.nome)} (${worst.desc}).`
+        : "Seu desempenho é parecido nas três fases da trilha (estratégia, construção e operação), sem uma frente claramente mais fraca.");
+    }
+
+    const perto = miss.filter(r => r.peso >= PERTO);
+    if (perto.length) {
+      ps.push(`Em ${lista(perto.map(r => forte(r.q.competencia)))} você chegou perto: o raciocínio ia na direção certa, faltou um ajuste para chegar à melhor decisão.`);
+    }
+
+    if (miss.length) {
+      // Prioridade: a escolha mais distante da melhor decisão (no empate, o módulo anterior)
+      const alvo = miss.reduce((a, r) => r.peso < a.peso ? r : a);
+      const aula = alvo.q.alternativas[alvo.chosen].aula;
+      ps.push(`<strong>Por onde começar:</strong> ${esc(moduloNome(alvo.q))} · ${esc(alvo.q.competencia)}, onde sua escolha ficou mais distante da melhor decisão. Para o equívoco da sua resposta, a aula indicada é <em>${esc(aula)}</em>.`);
+    } else {
+      ps.push("<strong>Próximo passo:</strong> o diagnóstico completo, com as questões de nível avançado, mostra em quais módulos você já pode seguir em ritmo rápido.");
+    }
+
+    return ps.map(p => `<p>${p}</p>`).join("");
+  }
+
+  function notaCard(r) {
+    if (r.ok) return "Você escolheu a melhor decisão. O diagnóstico completo confirma se já dá para seguir em ritmo rápido.";
+    const aula = r.q.alternativas[r.chosen].aula;
+    return r.peso >= PERTO
+      ? `Chegou perto: o raciocínio vai na direção certa, mas não é a melhor decisão. Aula sugerida: ${aula}.`
+      : `Sua escolha ficou longe da melhor decisão. Vale percorrer o módulo com atenção, começando por ${aula}.`;
+  }
+
   // ---------- Resultado ----------
   function renderResult() {
-    const results = QUESTIONS.map((q, i) => ({ q, chosen: state.answers[i], ok: state.answers[i] === q.correta }));
+    const results = QUESTIONS.map((q, i) => ({
+      q, chosen: state.answers[i], ok: state.answers[i] === q.correta, peso: pesoDe(i, state.answers[i])
+    }));
     const score = results.filter(r => r.ok).length;
     const tier = TIERS.find(t => score >= t.min);
 
@@ -285,20 +364,24 @@
       label: `Radar: ${score} de ${QUESTIONS.length} competências com sinal positivo`
     });
 
-    $(".map").innerHTML = results.map(({ q, ok }) => `
+    $(".map-summary").innerHTML = textoMapa(results);
+    sendLead({
+      email: state.email, etapa: "resultado", pontuacao: score,
+      respostas: results.map(r => ({ competencia: r.q.cod, resposta: r.chosen, correta: r.ok }))
+    });
+
+    $(".map").innerHTML = results.map(r => ({ ...r, nota: notaCard(r) })).map(({ q, ok, nota }) => `
       <li class="map__item ${ok ? "is-ok" : "is-miss"}">
         <div class="map__top">
           <span class="map__mod">${moduloNome(q)}</span>
           <span class="badge ${ok ? "badge--ok" : "badge--miss"}">${ok ? "✓ Sinal positivo" : "Ponto de atenção"}</span>
         </div>
         <span class="map__name">${esc(q.competencia)}</span>
-        <span class="map__note">${ok
-          ? "O completo confirma se você já está no avançado."
-          : "Vale percorrer este módulo com atenção."}</span>
+        <span class="map__note">${esc(nota)}</span>
       </li>`).join("");
 
     $(".review").innerHTML = results.map(({ q, chosen, ok }, i) => `
-      <details class="rv ${ok ? "is-ok" : "is-miss"}" ${!ok ? "open" : ""}>
+      <details class="rv ${ok ? "is-ok" : "is-miss"}">
         <summary>
           <span class="rv__icon" aria-label="${ok ? "Acertou" : "Errou"}">${ok ? "✓" : "✕"}</span>
           <span class="rv__head">
@@ -341,6 +424,41 @@
     show("quiz");
   }
 
+  // ---------- Lead (e-mail na home) ----------
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  function sendLead(payload) {
+    if (!LEAD_ENDPOINT) return;
+    try {
+      fetch(LEAD_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        keepalive: true
+      }).catch(() => {});
+    } catch (e) { /* o diagnóstico segue mesmo se o envio falhar */ }
+  }
+
+  $(".start-form").addEventListener("submit", e => {
+    e.preventDefault();
+    const input = $("#lead-email");
+    const email = input.value.trim();
+    const ok = EMAIL_RE.test(email);
+    $(".start-form__error").hidden = ok;
+    input.setAttribute("aria-invalid", String(!ok));
+    if (!ok) { input.focus(); return; }
+    state.email = email;
+    sendLead({ email, etapa: "inicio" });
+    renderQuestion();
+    show("quiz");
+  });
+  $("#lead-email").addEventListener("input", () => {
+    if (!$(".start-form__error").hidden && EMAIL_RE.test($("#lead-email").value.trim())) {
+      $(".start-form__error").hidden = true;
+      $("#lead-email").removeAttribute("aria-invalid");
+    }
+  });
+
   // ---------- Eventos ----------
   $$('[data-cta="full"]').forEach(a => { a.href = FULL_TEST_URL; });
 
@@ -348,7 +466,6 @@
     const btn = e.target.closest("[data-action]");
     if (!btn) return;
     const action = btn.dataset.action;
-    if (action === "start") { renderQuestion(); show("quiz"); }
     if (action === "next") next();
     if (action === "prev") prev();
     if (action === "restart") restart();

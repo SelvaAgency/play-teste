@@ -36,10 +36,18 @@
             <li>~5 minutos</li>
             <li>Resultado na hora</li>
           </ul>
-          <button class="btn btn--orange btn--lg" data-action="start">
-            Começar o diagnóstico
-            <span class="btn__arrow" aria-hidden="true">→</span>
-          </button>
+          <form class="start-form" novalidate>
+            <div class="start-form__row">
+              <label class="sr-only" for="lead-email">Seu e-mail</label>
+              <input class="start-form__input" id="lead-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="Seu melhor e-mail" required>
+              <button class="btn btn--orange btn--lg" type="submit">
+                Começar o diagnóstico
+                <span class="btn__arrow" aria-hidden="true">→</span>
+              </button>
+            </div>
+            <p class="start-form__error" role="alert" hidden>Digite um e-mail válido para começar.</p>
+            <p class="start-form__legal">Ao continuar, você concorda com a <a href="https://scaffoldplay.com.br/politica-de-privacidade/" target="_blank" rel="noopener">Política de Privacidade</a> do Play.</p>
+          </form>
         </div>
       </div>
 
@@ -109,7 +117,8 @@
         <div class="section-head">
           <p class="kicker">Mapa de competências</p>
           <h2>Seu mapa nas 9 competências</h2>
-          <p class="muted">Cada competência foi medida por uma única situação, de nível intermediário. É um sinal, não um nível. O diagnóstico completo mede cada competência em três níveis.</p>
+          <div class="map-summary"></div>
+          <p class="map-footnote">Cada competência foi medida por uma única situação, de nível intermediário. É um sinal, não um nível: o diagnóstico completo mede cada competência em três níveis.</p>
         </div>
         <div class="map-layout">
           <div class="radar-card radar-card--result">

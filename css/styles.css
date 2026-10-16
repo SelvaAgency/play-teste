@@ -605,36 +605,68 @@ button { font: inherit; }
   gap: 10px;
 }
 .radar-card__live { display: inline-block; min-width: 0; font-size: 15px; line-height: 1.3; text-align: left; }
-/* "Computing": os cubinhos da antiga home se empilhando em loop.
-   Preto entra pela esquerda, verde pela direita (horizontal), amarelo cai por cima (vertical). */
+/* "Computing": três cubinhos girando num quadrado 2x2, com um espaço vazio que circula.
+   O de cima vai para a direita, o de baixo à esquerda sobe, o de baixo à direita
+   vai para a esquerda e o da direita desce. Repete (12 passos até as cores voltarem). */
 .cubes-loader {
+  position: relative;
   flex: 0 0 auto;
-  display: grid;
-  grid-template-columns: repeat(2, 8px);
-  grid-template-rows: repeat(2, 8px);
-  gap: 1px;
+  width: 17px;
+  height: 17px;
 }
-.cubes-loader i { display: block; border-radius: 1px; animation: 2.2s cubic-bezier(.3,.7,.3,1) infinite both; }
-.cubes-loader i:nth-child(1) { grid-area: 1 / 1; background: var(--amarelinho); animation-name: cube-drop; }
-.cubes-loader i:nth-child(2) { grid-area: 2 / 1; background: var(--pretinho); animation-name: cube-left; }
-.cubes-loader i:nth-child(3) { grid-area: 2 / 2; background: var(--verdinho); animation-name: cube-right; }
-@keyframes cube-left {
-  0% { opacity: 0; transform: translateX(-9px); }
-  14%, 78% { opacity: 1; transform: none; }
-  90%, 100% { opacity: 0; transform: none; }
+.cubes-loader i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 1.5px;
+  animation: 4.8s cubic-bezier(.55,0,.25,1) infinite both;
 }
-@keyframes cube-right {
-  0%, 16% { opacity: 0; transform: translateX(9px); }
-  30%, 78% { opacity: 1; transform: none; }
-  90%, 100% { opacity: 0; transform: none; }
+.cubes-loader i:nth-child(1) { background: var(--verdinho); animation-name: cube-a; }
+.cubes-loader i:nth-child(2) { background: var(--amarelinho); animation-name: cube-b; }
+.cubes-loader i:nth-child(3) { background: var(--rosinha); animation-name: cube-c; }
+@keyframes cube-a {
+  0% { transform: translate(0px, 0px); }
+  0.000% { transform: translate(0px, 0px); }
+  4.583% { transform: translate(9px, 0px); }
+  25.000% { transform: translate(9px, 0px); }
+  29.583% { transform: translate(9px, 9px); }
+  50.000% { transform: translate(9px, 9px); }
+  54.583% { transform: translate(0px, 9px); }
+  75.000% { transform: translate(0px, 9px); }
+  79.583% { transform: translate(0px, 0px); }
+  100% { transform: translate(0px, 0px); }
 }
-@keyframes cube-drop {
-  0%, 32% { opacity: 0; transform: translateY(-10px); }
-  46% { opacity: 1; transform: translateY(1px); }
-  52%, 78% { opacity: 1; transform: none; }
-  90%, 100% { opacity: 0; transform: none; }
+@keyframes cube-b {
+  0% { transform: translate(0px, 9px); }
+  8.333% { transform: translate(0px, 9px); }
+  12.917% { transform: translate(0px, 0px); }
+  33.333% { transform: translate(0px, 0px); }
+  37.917% { transform: translate(9px, 0px); }
+  58.333% { transform: translate(9px, 0px); }
+  62.917% { transform: translate(9px, 9px); }
+  83.333% { transform: translate(9px, 9px); }
+  87.917% { transform: translate(0px, 9px); }
+  100% { transform: translate(0px, 9px); }
 }
-@media (prefers-reduced-motion: reduce) { .cubes-loader i { animation: none; } }
+@keyframes cube-c {
+  0% { transform: translate(9px, 9px); }
+  16.667% { transform: translate(9px, 9px); }
+  21.250% { transform: translate(0px, 9px); }
+  41.667% { transform: translate(0px, 9px); }
+  46.250% { transform: translate(0px, 0px); }
+  66.667% { transform: translate(0px, 0px); }
+  71.250% { transform: translate(9px, 0px); }
+  91.667% { transform: translate(9px, 0px); }
+  96.250% { transform: translate(9px, 9px); }
+  100% { transform: translate(9px, 9px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cubes-loader i { animation: none; }
+  .cubes-loader i:nth-child(2) { transform: translate(0, 9px); }
+  .cubes-loader i:nth-child(3) { transform: translate(9px, 9px); }
+}
 .radar-card__note { font-size: 13px; color: var(--texto-2); text-align: center; margin-top: 8px; }
 .radar-card__note strong { color: var(--texto); }
 .radar { max-width: 320px; margin: 0 auto; }
@@ -706,3 +738,41 @@ button { font: inherit; }
   .quiz__comp { font-size: 14px; padding: 6px 12px; border-radius: 16px; }
 }
 @media (max-width: 1079px) { .quiz-layout .radar-card__title--live { justify-content: flex-start; } }
+
+/* Texto personalizado do mapa */
+.map-summary { display: grid; gap: 12px; margin-top: 14px; color: var(--texto-2); font-size: 17px; line-height: 1.6; }
+.map-summary strong { color: var(--texto); font-weight: 700; }
+.map-summary em { color: var(--texto); font-style: normal; text-decoration: underline; text-decoration-color: var(--vermelhinho); text-underline-offset: 3px; }
+.map-summary p:last-child { padding: 14px 16px; border-left: 3px solid var(--vermelhinho); background: var(--surface); border-radius: 0 8px 8px 0; }
+.map-footnote { margin-top: 16px; font-size: 13px; color: var(--cinza-texto); }
+.section-head:has(.map-summary) { max-width: 78ch; }
+
+/* Radar do resultado: já computado, fica parado */
+[data-radar="result"] .r-breath { animation: none; }
+
+/* Formulário de e-mail da home */
+.start-form { max-width: 640px; }
+.start-form__row { display: flex; gap: 10px; align-items: stretch; }
+.start-form__input {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 58px;
+  padding: 0 24px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--cinza-borda);
+  background: var(--bg);
+  color: var(--texto);
+  font-family: var(--font-body);
+  font-size: 17px;
+}
+.start-form__input::placeholder { color: var(--cinza-texto); }
+.start-form__input:focus { outline: none; border-color: var(--vermelhinho); box-shadow: 0 0 0 3px rgba(241, 101, 34, .25); }
+.start-form__input[aria-invalid="true"] { border-color: var(--vermelhinho); }
+.start-form__row .btn { flex: 0 0 auto; white-space: nowrap; }
+.start-form__error { margin-top: 10px; font-size: 14px; font-weight: 600; color: var(--vermelhinho); }
+.start-form__legal { margin-top: 12px; font-size: 13px; color: var(--cinza-texto); }
+.start-form__legal a { color: var(--texto-2); }
+@media (max-width: 640px) {
+  .start-form__row { flex-direction: column; }
+  .start-form__row .btn { width: 100%; }
+}
