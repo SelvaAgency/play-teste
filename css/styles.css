@@ -198,7 +198,8 @@ button { font: inherit; }
   padding-top: 48px;
   padding-bottom: 72px;
 }
-@media (min-width: 900px) { .how { grid-template-columns: repeat(3, 1fr); gap: 24px; } }
+@media (min-width: 640px) { .how { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1080px) { .how { grid-template-columns: repeat(4, 1fr); gap: 20px; } }
 .how__item {
   background: var(--cinza-bg);
   border-radius: var(--radius);
@@ -936,3 +937,19 @@ body.theme-light {
 .result-cta__lead a { color: var(--texto); font-weight: 600; text-decoration: underline; text-decoration-color: var(--vermelhinho); text-underline-offset: 3px; }
 .result-cta__lead a:hover { color: var(--vermelhinho); }
 .result-cta__lead a:focus-visible { outline: 2px solid var(--vermelhinho); outline-offset: 2px; border-radius: 2px; }
+
+/* 4º passo: o maior destaque, leva para a trilha */
+.how__item--play {
+  display: flex;
+  flex-direction: column;
+  background: var(--vermelhinho);
+  color: var(--pretinho);
+  text-decoration: none;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.how__item--play:hover { transform: translateY(-2px); box-shadow: 4px 4px 0 var(--texto); }
+.how__item--play:focus-visible { outline: 3px solid var(--texto); outline-offset: 3px; }
+.how__item--play .how__num { color: var(--pretinho); }
+.how__item--play p { color: rgba(18, 18, 18, .85); }
+.how__link { margin-top: auto; padding-top: 16px; font-family: var(--font-head); font-weight: 800; font-size: 15px; }
+@media (prefers-reduced-motion: reduce) { .how__item--play { transition: none; } }
