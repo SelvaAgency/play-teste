@@ -336,7 +336,7 @@ button { font: inherit; }
   gap: 24px;
   align-items: center;
   padding-top: 56px;
-  padding-bottom: 56px;
+  padding-bottom: 36px;
 }
 @media (min-width: 760px) { .result-hero__inner { grid-template-columns: auto 1fr; gap: 48px; } }
 .score {
@@ -776,3 +776,16 @@ button { font: inherit; }
   .start-form__row { flex-direction: column; }
   .start-form__row .btn { width: 100%; }
 }
+
+/* CTA logo abaixo do resultado, separado por um divisor */
+.result-cta {
+  display: grid;
+  gap: 20px;
+  align-items: center;
+  padding: 28px 0 40px;
+  border-top: 1px solid #333;
+}
+@media (min-width: 860px) { .result-cta { grid-template-columns: 1fr auto; gap: 40px; } }
+.result-cta__title { font-family: var(--font-head); font-weight: 800; font-size: clamp(1.25rem, 2.6vw, 1.55rem); letter-spacing: -0.02em; margin-bottom: 6px; }
+.result-cta__lead { color: var(--texto-2); max-width: 60ch; }
+@media (max-width: 859px) { .result-cta .btn { width: 100%; } }
