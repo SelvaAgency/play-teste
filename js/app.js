@@ -317,18 +317,10 @@
     const miss = results.filter(r => !r.ok);
     const ps = [];
 
-    if (miss.length === 0) {
-      ps.push("Você já entende bem de IA aplicada a negócios: escolheu a melhor decisão nas 9 situações, das mais estratégicas às do dia a dia da operação.");
-    } else if (ok.length === 0) {
-      ps.push("Você está no começo da construção dessas habilidades: em nenhuma das 9 situações sua escolha coincidiu com a melhor decisão. É comum para quem ainda não aplicou IA no trabalho, e mostra que o espaço para evoluir é grande.");
-    } else if (ok.length >= 6) {
-      ps.push(`Você já entende bem de IA aplicada: decidiu bem em ${ok.length} das 9 situações. ` +
-        (miss.length === 1 ? `A habilidade que ainda pede desenvolvimento é ${nomes(miss)}.`
-                           : `As habilidades que ainda pedem desenvolvimento são ${nomes(miss)}.`));
-    } else if (miss.length >= 6) {
-      ps.push(`Você já mostra base em ${nomes(ok)}. As outras ${miss.length} habilidades ainda pedem desenvolvimento.`);
-    } else {
-      ps.push(`Seus pontos fortes hoje são ${nomes(ok)}. As habilidades que ainda pedem desenvolvimento são ${nomes(miss)}.`);
+    // Sem parágrafo de abertura: os pontos fortes e a desenvolver já aparecem nos cards,
+    // então o texto vai direto para a explicação.
+    if (ok.length === 0) {
+      ps.push("Em nenhuma das 9 situações sua escolha coincidiu com a melhor decisão. É comum para quem ainda não aplicou IA no trabalho, e mostra que o espaço para evoluir é grande.");
     }
 
     if (ok.length && miss.length) {
@@ -439,6 +431,29 @@
 
   }
 
+  // Compartilhar: menu nativo no celular (WhatsApp etc.); no desktop, copia o link
+  const SHARE = {
+    title: "Diagnóstico de IA aplicada · Play",
+    text: "Fiz o diagnóstico gratuito de IA aplicada a negócios do Play. Descubra o seu nível:"
+  };
+  async function share(btn) {
+    const url = location.origin + location.pathname;
+    const status = $(".share__status");
+    if (navigator.share) {
+      try { await navigator.share({ ...SHARE, url }); return; }
+      catch (e) { if (e && e.name === "AbortError") return; }
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      status.textContent = "Link copiado! É só colar e enviar para quem você quiser.";
+    } catch (e) {
+      status.textContent = `Copie o link: ${url}`;
+    }
+    btn.classList.add("is-done");
+    clearTimeout(btn._t);
+    btn._t = setTimeout(() => { btn.classList.remove("is-done"); status.textContent = ""; }, 4000);
+  }
+
   function restart() {
     state.index = 0;
     state.answers.fill(null);
@@ -492,6 +507,7 @@
     if (action === "next") next();
     if (action === "prev") prev();
     if (action === "restart") restart();
+    if (action === "share") share(btn);
   });
 
   // Hover numa alternativa: pump pequeno (só mouse; no toque o clique já pulsa)

@@ -492,7 +492,10 @@ button { font: inherit; }
 .tag--correct { background: var(--verdinho); color: var(--pretinho); }
 .tag--chosen { background: var(--texto); color: var(--pretinho); }
 
-.restart { display: flex; justify-content: center; padding: 40px 0 80px; }
+.restart { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; padding: 40px 0 12px; }
+.share__status { min-height: 1.5em; text-align: center; font-size: 14px; font-weight: 600; color: var(--texto-2); padding-bottom: 64px; }
+[data-action="share"].is-done { background: var(--verdinho); color: var(--pretinho); }
+@media (max-width: 480px) { .restart .btn { width: 100%; } }
 
 /* ---------- Footer ---------- */
 .footer { background: #0b0b0b; color: rgba(255,255,255,.7); font-size: 15px; }
@@ -932,6 +935,8 @@ body.theme-light {
 .theme-light .rv__alt.is-correct { background: #effbf1; }
 .theme-light .rv__alt.is-chosen-wrong { background: #fff4ee; }
 .theme-light .tag--chosen { color: var(--branco); }
+.theme-light .btn--dark { color: var(--branco); }
+.theme-light [data-action="share"].is-done { color: var(--pretinho); }
 .theme-light .map-summary p:last-child { background: #f6f6f6; }
 
 .result-cta__lead a { color: var(--texto); font-weight: 600; text-decoration: underline; text-decoration-color: var(--vermelhinho); text-underline-offset: 3px; }
