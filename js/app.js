@@ -433,9 +433,10 @@
 
     // Leva as competências "para desenvolver" e as UTMs no link do checkout
     // (/compra-trilha/). O formulário de lá lê `competencias` da URL e envia junto
-    // com o contato para o webhook do n8n. Se acertou tudo, o parâmetro não vai.
+    // com o contato para o webhook do n8n.
     const buyParams = new URLSearchParams();
-    if (competencias.length) buyParams.set("competencias", competencias.join(","));
+    // Vai sempre, mesmo vazio (acertou tudo): assim o checkout limpa qualquer valor antigo da sessão
+    buyParams.set("competencias", competencias.join(","));
     UTM_KEYS.forEach(k => { if (utms[k]) buyParams.set(k, utms[k]); });
     $$('[data-cta="buy"]').forEach(a => {
       const url = new URL(a.dataset.base || (a.dataset.base = a.href));
