@@ -5,9 +5,27 @@
   // os CTAs do resultado levam à compra da trilha).
   const FULL_TEST_URL = "https://scaffoldplay.com.br/";
 
-  // TODO: endpoint que recebe os leads (CRM / automação). Vazio = não envia nada.
-  // Recebe JSON: { email, etapa: "inicio" | "resultado", pontuacao?, respostas? }
+  // Webhook de leads do Play (n8n), o mesmo dos outros formulários. Vazio = não envia nada.
+  // Formato combinado com o Lucas (Play):
+  //   { etapa, competencias?: ["C1", ...], contato: { email, ... }, utms: { utm_source, ... } }
+  // `competencias` = as competências marcadas como "para desenvolver" no resultado;
+  // no n8n elas viram módulos obrigatórios quando a compra é confirmada no WooCommerce.
+  // Se a pessoa acertou tudo, o campo não vai.
   const LEAD_ENDPOINT = "";
+  const LEAD_HEADERS = {}; // autenticação do webhook (a confirmar com o Play)
+  const LEAD_ETAPA = "diagnostico-curto"; // valor de "etapa" (a confirmar com o Play)
+
+  // UTMs da URL de entrada; ficam na sessão para sobreviver a um "refazer o teste"
+  const UTM_KEYS = ["utm_source", "utm_campaign", "utm_medium", "utm_term", "utm_content"];
+  const utms = (() => {
+    let saved = {};
+    try { saved = JSON.parse(sessionStorage.getItem("play_utms") || "{}"); } catch (e) {}
+    const qs = new URLSearchParams(location.search);
+    const out = {};
+    UTM_KEYS.forEach(k => { out[k] = qs.get(k) || saved[k] || ""; });
+    try { sessionStorage.setItem("play_utms", JSON.stringify(out)); } catch (e) {}
+    return out;
+  })();
 
   const QUESTIONS = window.QUESTIONS;
   const LETTERS = ["A", "B", "C", "D"];
@@ -413,9 +431,12 @@
     });
 
     $(".map-summary").innerHTML = textoMapa(results);
+    const competencias = results.filter(r => !r.ok).map(r => r.q.cod);
     sendLead({
-      email: state.email, etapa: "resultado", pontuacao: score,
-      respostas: results.map(r => ({ competencia: r.q.cod, resposta: r.chosen, correta: r.ok }))
+      etapa: LEAD_ETAPA,
+      ...(competencias.length ? { competencias } : {}),
+      contato: { email: state.email },
+      utms
     });
 
     $(".map").innerHTML = results.map(r => ({ ...r, nota: notaCard(r) })).map(({ q, ok, nota, chosen }) => `
@@ -470,7 +491,7 @@
     try {
       fetch(LEAD_ENDPOINT, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...LEAD_HEADERS },
         body: JSON.stringify(payload),
         keepalive: true
       }).catch(() => {});
@@ -486,7 +507,7 @@
     input.setAttribute("aria-invalid", String(!ok));
     if (!ok) { input.focus(); return; }
     state.email = email;
-    sendLead({ email, etapa: "inicio" });
+    // O envio acontece só no resultado, numa única requisição com e-mail + competências
     renderQuestion();
     show("quiz");
   });
